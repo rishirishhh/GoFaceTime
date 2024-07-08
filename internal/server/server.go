@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	w "GoFaceTime/pkg/webrtc"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -48,4 +50,20 @@ func Run() error {
 	app.Get("/stream/:suuid/viewer/websocket", websocket.New(handlers.StreamViewerWebsocket))
 	app.Static("/", "./assets")
 
+	w.Rooms = make(map[string]*w.Room)
+	w.Streams = make(map[string]*w.Room)
+	go dispatchKeyFrames()
+
+	if *cert != "" {
+		return app.ListenTLS(*addr, *cert, *key)
+	}
+	return app.Listen(*addr)
+}
+
+func dispatchKeyFrames() {
+	for range time.NewTicker(time.Second * 3).C {
+		for _, room := range w.Rooms {
+			room.Peers.DispatchKeyFrame()
+		}
+	}
 }
