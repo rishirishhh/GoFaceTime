@@ -3,13 +3,15 @@ package handlers
 import (
 	"fmt"
 
+	w "GoFaceTime/pkg/webrtc"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-	gguid "github.com/google/uuid"
+	guuid "github.com/google/uuid"
 )
 
 func RoomCreate(c *fiber.Ctx) error {
-	return c.Redirect(fmt.Sprintf("/room/%s", gguid.New().String()))
+	return c.Redirect(fmt.Sprintf("/room/%s", guuid.New().String()))
 }
 
 func Room(c *fiber.Ctx) error {
@@ -33,6 +35,18 @@ func RoomWebsocket(c *websocket.Conn) {
 	// need to complete
 }
 
-func createOrGetRoom(uuid string) (string, string, Room) {
+func createOrGetRoom(uuid string) (string, string, *w.Room) {
 
+}
+
+func RoomViewerWebsocket(c *websocket.Conn) {
+}
+
+func RoomViewerConn(c *websocket.Conn, p *w.Peers) {
+
+}
+
+type websocketMessage struct {
+	Event string `json:"event"`
+	Data  string `json:"data"`
 }
